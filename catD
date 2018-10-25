@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+
+cat $HOME/bin/DestinationDirectory.txt
+

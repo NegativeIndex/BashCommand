@@ -1,0 +1,90 @@
+#$ -q all.q
+##$ -q UI
+#$ -N MYJOBNAME
+#$ -pe smp 4
+#$ -o $HOME/temp
+#$ -e $HOME/temp
+
+pyname=PYNAME
+basename=BASENAME
+cd CURRENTDIRECTORY
+
+# define all the file names
+num=${JOB_ID%%.*}
+recordname=fb-${basename}-${num}.txt
+
+running=$HOME/temp/running.txt
+summary=$HOME/temp/summary.txt
+finish=$HOME/temp/finish.txt
+
+# register the job
+echo "+++++++++++++++++++++++++++++" >> job.info
+date >> job.info
+echo $JOB_ID  $JOB_NAME $pyname ${recordname} >> job.info
+
+# global register
+LCK="/Users/wdai11/temp/Submit_job.LCK";
+exec 8>$LCK;
+flock -x 8;
+
+echo $JOB_ID $JOB_NAME $pyname ${recordname} >> $running
+pwd >> $running
+echo -n "Job begin : " >> $running
+date >> $running
+echo "**************************" >> $running
+
+echo $JOB_ID $JOB_NAME $pyname ${recordname} >> $summary
+pwd >> $summary
+echo -n "Job begin : " >> $summary
+date >> $summary
+echo "**************************" >> $summary
+sync
+flock -u 8
+
+# job begin
+echo $JOB_ID $JOB_NAME $pyname ${recordname} > ${recordname}
+date >> ${recordname}
+echo "hello" >> ${recordname}
+echo "===============================" >> ${recordname}
+python3 $pyname >> ${recordname}
+echo "===============================" >> ${recordname}
+date >> ${recordname}
+echo "bye" >> ${recordname}
+
+# unregister job globally
+flock -x 8;
+echo $JOB_ID $JOB_NAME $pyname ${recordname} >> $summary
+pwd >> $summary
+echo -n "Job finish : " >> $summary
+date >> $summary
+echo "############################" >> $summary
+
+runningtemp=${running}_${JOB_ID}
+finishtemp=${finish}_${JOB_ID}
+touch ${runningtemp}
+touch ${finishtemp}
+sed -n "/^${JOB_ID}/, +2 p" < $running >> $finishtemp
+sed  "/^${JOB_ID}/, +3 d" < $running >> $runningtemp
+mv $runningtemp $running
+
+echo -n "Job end   : " >>  $finishtemp
+date >> $finishtemp
+echo "##########################" >> $finishtemp
+cat $finishtemp >> $finish
+rm $finishtemp
+sync
+flock -u 8;
+
+#  cleanup /tmp (if necessary)
+#
+
+#  leave a hint in the working dierctory
+#  that the job has comleted
+#
+touch job.done
+echo "-----------------------------" >> job.done
+date >> job.done
+echo $JOB_ID  $JOB_NAME $pyname ${recordname} >> job.done
+echo "-----------------------------" >> job.info
+date >> job.info
+echo $JOB_ID  $JOB_NAME $pyname ${recordname} >> job.info

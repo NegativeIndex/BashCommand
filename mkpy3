@@ -1,0 +1,17 @@
+#!/usr/bin/python2
+import os
+import sys
+import stat
+
+def make_executable(path):
+    mode = os.stat(path).st_mode
+    mode |= (mode & 0444) >> 2    # copy R bits to X
+    os.chmod(path, mode)
+
+# print 'Number of arguments:', len(sys.argv), 'arguments.'
+for fullname in sys.argv[1:]:
+    with open(fullname,'w') as f:
+        f.write('#!/Users/wdai11/anaconda3/bin/python3\n\n')
+    make_executable(fullname)
+
+

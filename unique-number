@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+fname=$HOME/bin/UniqueNumberFile.txt
+ss=`cat $fname`
+tt=$(($ss+1))
+if (($tt > 999)); then
+    tt=0
+fi
+
+printf "%d" $tt > $fname
+
+echo `printf "%03d" $ss`

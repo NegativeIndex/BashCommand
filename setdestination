@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+if [ $# -ne 0 ];
+then
+  cd $1
+fi
+pwd > $HOME/bin/DestinationDirectory.txt
+
+#catD
+
+echo -e '\E[37;33m'"\033[1m`cat $HOME/bin/DestinationDirectory.txt`\033[0m"

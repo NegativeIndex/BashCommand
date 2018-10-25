@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+echo -e Destination is '\E[37;31m'"\033[1m`cat $HOME/bin/DestinationDirectory.txt`\033[0m"
+for i in "$@"
+do
+  cp  -r $i `cat $HOME/bin/DestinationDirectory.txt`
+  echo  "$i -> Destination"
+done
+

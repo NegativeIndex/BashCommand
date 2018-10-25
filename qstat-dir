@@ -1,0 +1,26 @@
+#!/Users/wdai11/anaconda3/bin/python3
+import sys
+import subprocess
+import datetime
+import re
+import os,glob,time
+sys.path.insert(0,'/Users/wdai11/function')
+import qjob
+
+
+if sys.argv[1:]:
+    for idx in sys.argv[1:]:
+        res=subprocess.check_output(['qstat','-j',idx]).decode("utf-8")
+        match=re.search(r'sge_o_workdir:\s+(\S+)\s+',res)
+        if match:
+            print(idx)
+            folder=match.group(1)
+            print(folder)
+else:
+    qjobs=qjob.Qjob_list()
+    qjobs.myq()
+    for job in qjobs:
+        print(job.idx)
+        print(job.folder)
+    
+  

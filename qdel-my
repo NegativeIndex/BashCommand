@@ -1,0 +1,50 @@
+#!/Users/wdai11/anaconda3/bin/python3
+import sys
+import subprocess
+import datetime
+import re
+import os,glob,time
+import random
+
+##########################
+# define a function
+#########################
+def get_ID(ll):
+    line=ll.decode("utf-8")
+    words=line.split()
+    idx=words[0]
+    status=words[4]
+    btime_str=words[5]+" "+words[6]
+    queue=words[7]
+    btime=datetime.datetime.strptime(btime_str, "%m/%d/%Y %H:%M:%S")
+
+    matchObj = re.match( r'(.*)@', queue, re.M|re.I)
+    if matchObj:
+        server=matchObj.group(1)
+    else:
+        server="all.q"
+    return idx
+
+
+#####################
+# main function
+#####################
+
+# get id list
+res = subprocess.check_output("myq")
+lines=res.splitlines()
+del lines[0:2]
+id_list=[get_ID(ll) for ll in lines]
+
+# get argument
+for ss in sys.argv[1:]:
+    print(ss)
+    id_list=[idx for idx in id_list if eval(ss.replace('id',idx))]
+
+print(id_list)
+
+userInput = input('Are you sure to delete all the command. y/n?  ');
+if userInput=='y':
+    for idx in id_list:
+        res=subprocess.check_output(['qdel',idx])
+        print(res.decode("utf-8").rstrip())
